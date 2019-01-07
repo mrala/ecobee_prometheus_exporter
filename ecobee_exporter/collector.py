@@ -12,7 +12,8 @@ from pyecobee import *
 
 class EcobeeAuth():
     """Authorize Ecobee token."""
-    def __init__(self, ecobee_service):
+    def __init__(self, ecobee_service, auth_file):
+        self.auth_file = auth_file
         self.ecobee_service = ecobee_service
         self.thermostat_name = "thermostat"
         self.metrics = []
@@ -31,7 +32,7 @@ class EcobeeAuth():
         self._log.debug("TokenResponse returned from "
                         "ecobee_service.refresh_tokens():"
                         "\n%s", token_response.pretty_format())
-        self.persist_to_shelf("pyecobee_db")
+        self.persist_to_shelf(self.auth_file)
 
     def request_tokens(self):
         """Request tokens."""
@@ -39,7 +40,7 @@ class EcobeeAuth():
         self._log.debug("TokenResponse returned from "
                         "ecobee_service.request_tokens():"
                         "\n%s", token_response.pretty_format())
-        self.persist_to_shelf("pyecobee_db")
+        self.persist_to_shelf(self.auth_file)
 
     def authorize(self):
         """Get authorization token."""
@@ -47,7 +48,7 @@ class EcobeeAuth():
         self._log.debug("AutorizeResponse returned from "
                         "ecobee_service.authorize():"
                         "\n%s", authorize_response.pretty_format())
-        self.persist_to_shelf("pyecobee_db")
+        self.persist_to_shelf(self.auth_file)
         self._log.info("Please authorize this app at https://www.ecobee.com/"
                        "consumer/portal/index.html with pin code:\n%s\n",
                        authorize_response.ecobee_pin)
@@ -83,8 +84,9 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
     """Collect and format metrics from Ecobee."""
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, api_key):
+    def __init__(self, api_key, auth_file):
         self.api_key = api_key
+        self.auth_file = auth_file
         self.metrics = []
         self.thermostat_name = "thermostat"
         self.summary_selection = Selection(
@@ -101,10 +103,6 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
         namespace = "ecobee"
         sensor_labels = ["thermostat_name", "sensor_name"]
         runtime_labels = ["thermostat_name", "type"]
-        # detail_labelnames = ['device_type', 'firmware_version', 'permanently_reachable']
-        # event_device_labelnames = ['device_label']
-        # event_group_labelnames = ['group_label']
-        # event_labelnames = ['type', 'window_state', 'sabotage']
 
         self.metric_temperature_actual = Gauge(
             name="temperature_actual",
@@ -225,7 +223,7 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
 
     def settings_data(self, thermostat, thermostat_id):
         """Gather settings data."""
-        pass
+        raise NotImplementedError
     #     for setting, value_type in thermostat.settings.attribute_type_map.items():
     #         labels = dict(thermostat_id)
     #         try:
@@ -252,7 +250,7 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
     def collect(self):
         """Collect metrics."""
         try:
-            pyecobee_db = shelve.open("pyecobee_db", writeback=True)
+            pyecobee_db = shelve.open(self.auth_file, writeback=True)
             ecobee_service = pyecobee_db[self.thermostat_name]
         except KeyError:
             ecobee_service = EcobeeService(thermostat_name=self.thermostat_name,
@@ -260,7 +258,8 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
         finally:
             pyecobee_db.close()
 
-        ecobee_auth = EcobeeAuth(ecobee_service=ecobee_service)
+        ecobee_auth = EcobeeAuth(ecobee_service=ecobee_service,
+                                 auth_file=self.auth_file)
         ecobee_auth.check_token()
 
         thermostat_summary_response = ecobee_service.request_thermostats_summary(

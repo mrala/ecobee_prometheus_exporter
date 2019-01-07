@@ -14,7 +14,7 @@ def main():
     parser.add_argument("--port", type=int, default=9756)
     parser.add_argument("--bind_address", default="0.0.0.0")
     parser.add_argument("--api_key", required=True)
-    # parser.add_argument("--auth_file", required=True)
+    parser.add_argument("--auth_file", default="pyecobee_db")
     parser.add_argument("--verbose", "-v", action="count")
 
     args = parser.parse_args()
@@ -26,7 +26,7 @@ def main():
 
     logging.basicConfig(stream=sys.stdout, level=level)
 
-    collector = ecobee_exporter.EcobeeCollector(args.api_key)
+    collector = ecobee_exporter.EcobeeCollector(args.api_key, args.auth_file)
 
     prometheus_client.REGISTRY.register(collector)
 
