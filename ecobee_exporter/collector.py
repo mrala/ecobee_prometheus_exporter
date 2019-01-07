@@ -187,15 +187,15 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
         cool_range = {}
         cool_range["low"], cool_range["high"] = thermostat.runtime.__getattribute__(
             "desired_cool_range")
-        for range_type in ["low", "high"]:
-            self.metric_desired_cool_range.labels(
-                thermostat_name=thermostat.name,
-                type=range_type).set(cool_range[range_type] / 10.0)
 
         heat_range = {}
         heat_range["low"], heat_range["high"] = thermostat.runtime.__getattribute__(
             "desired_heat_range")
+
         for range_type in ["low", "high"]:
+            self.metric_desired_cool_range.labels(
+                thermostat_name=thermostat.name,
+                type=range_type).set(cool_range[range_type] / 10.0)
             self.metric_desired_heat_range.labels(
                 thermostat_name=thermostat.name,
                 type=range_type).set(heat_range[range_type] / 10.0)
