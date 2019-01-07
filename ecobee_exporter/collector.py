@@ -265,10 +265,12 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
         thermostat_summary_response = ecobee_service.request_thermostats_summary(
             self.summary_selection
             )
-        self._log.debug(thermostat_summary_response)
+        self._log.debug("Response from "
+                        "ecobee_service.request_thermostats_summary:\n%s",
+                        thermostat_summary_response.pretty_format())
 
         thermostat_ids = [i.replace(":", "") for i in thermostat_summary_response.status_list]
-        self._log.debug(thermostat_ids)
+        self._log.debug("Found thermostat(s):\n%s", thermostat_ids)
 
         for thermostat_id in thermostat_ids:
             thermostat_response = ecobee_service.request_thermostats(
@@ -280,10 +282,13 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                     include_sensors=True,
                     include_weather=True)
                 )
-            self._log.debug(thermostat_response)
+            self._log.debug("Response from "
+                            "ecobee_service.request_thermostats:\n%s",
+                            thermostat_response)
 
             for thermostat in thermostat_response.thermostat_list:
-                print(thermostat.name)
+                self._log.debug("Gathering data for thermostat:\n%s",
+                                thermostat.name)
                 thermostat_id = {
                     "thermostat_id": thermostat.identifier,
                     "thermostat_name": thermostat.name}
