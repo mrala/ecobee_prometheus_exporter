@@ -209,17 +209,20 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                     self.metric_temperature_actual.labels(
                         thermostat_name=thermostat.name,
                         sensor_name=sensor.name).set(
-                            float(capability.value) / 10.0)
+                            float(capability.value) / 10.0
+                        )
                 if capability.type == "humidity":
                     self.metric_humidity.labels(
                         thermostat_name=thermostat.name,
                         sensor_name=sensor.name).set(
-                            float(capability.value))
+                            float(capability.value)
+                        )
                 if capability.type == "occupancy":
                     self.metric_occupancy.labels(
                         thermostat_name=thermostat.name,
                         sensor_name=sensor.name).set(
-                            float(self.convert_string(capability.value)))
+                            float(self.convert_string(capability.value))
+                        )
 
     def settings_data(self, thermostat, thermostat_id):
         """Gather settings data."""
@@ -253,13 +256,16 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
             pyecobee_db = shelve.open(self.auth_file, writeback=True)
             ecobee_service = pyecobee_db[self.thermostat_name]
         except KeyError:
-            ecobee_service = EcobeeService(thermostat_name=self.thermostat_name,
-                                           application_key=self.api_key)
+            ecobee_service = EcobeeService(
+                thermostat_name=self.thermostat_name,
+                application_key=self.api_key
+            )
         finally:
             pyecobee_db.close()
 
         ecobee_auth = EcobeeAuth(ecobee_service=ecobee_service,
-                                 auth_file=self.auth_file)
+                                 auth_file=self.auth_file
+                                 )
         ecobee_auth.check_token()
 
         thermostat_summary_response = ecobee_service.request_thermostats_summary(
@@ -284,14 +290,17 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                 )
             self._log.debug("Response from "
                             "ecobee_service.request_thermostats:\n%s",
-                            thermostat_response)
+                            thermostat_response
+                            )
 
             for thermostat in thermostat_response.thermostat_list:
                 self._log.debug("Gathering data for thermostat:\n%s",
-                                thermostat.name)
+                                thermostat.name
+                                )
                 thermostat_id = {
                     "thermostat_id": thermostat.identifier,
-                    "thermostat_name": thermostat.name}
+                    "thermostat_name": thermostat.name
+                }
 
                 self.running_equipment(thermostat)
                 self.runtime_data(thermostat)
