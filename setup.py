@@ -14,9 +14,12 @@ setup(
         "Operating System :: OS Independent",
     ],
     description="Export Ecobee metrics for Prometheus",
+    dependency_links=[
+        "git+ssh://git@github.com/mumblepins/Pyecobee.git#egg=Pyecobee"
+    ],
     install_requires=[
         "prometheus_client",
-        "pyecobee"
+        "Pyecobee"
     ],
     license="MIT",
     long_description=long_description,

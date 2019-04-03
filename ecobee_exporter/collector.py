@@ -7,8 +7,8 @@ from time import sleep
 
 import pytz
 
-from prometheus_client import Gauge
-from pyecobee import *
+from prometheus_client import Gauge # type: ignore
+from pyecobee import * # type: ignore
 
 class EcobeeAuth():
     """Authorize Ecobee token."""
@@ -209,20 +209,17 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                     self.metric_temperature_actual.labels(
                         thermostat_name=thermostat.name,
                         sensor_name=sensor.name).set(
-                            float(capability.value) / 10.0
-                        )
+                            float(capability.value) / 10.0)
                 if capability.type == "humidity":
                     self.metric_humidity.labels(
                         thermostat_name=thermostat.name,
                         sensor_name=sensor.name).set(
-                            float(capability.value)
-                        )
+                            float(capability.value))
                 if capability.type == "occupancy":
                     self.metric_occupancy.labels(
                         thermostat_name=thermostat.name,
                         sensor_name=sensor.name).set(
-                            float(self.convert_string(capability.value))
-                        )
+                            float(self.convert_string(capability.value)))
 
     def settings_data(self, thermostat, thermostat_id):
         """Gather settings data."""
@@ -258,19 +255,16 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
         except KeyError:
             ecobee_service = EcobeeService(
                 thermostat_name=self.thermostat_name,
-                application_key=self.api_key
-            )
+                application_key=self.api_key)
         finally:
             pyecobee_db.close()
 
         ecobee_auth = EcobeeAuth(ecobee_service=ecobee_service,
-                                 auth_file=self.auth_file
-                                 )
+                                 auth_file=self.auth_file)
         ecobee_auth.check_token()
 
         thermostat_summary_response = ecobee_service.request_thermostats_summary(
-            self.summary_selection
-            )
+            self.summary_selection)
         self._log.debug("Response from "
                         "ecobee_service.request_thermostats_summary:\n%s",
                         thermostat_summary_response.pretty_format())
@@ -286,24 +280,23 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                     include_equipment_status=True,
                     include_runtime=True,
                     include_sensors=True,
-                    include_weather=True)
-                )
+                    include_weather=True))
             self._log.debug("Response from "
                             "ecobee_service.request_thermostats:\n%s",
-                            thermostat_response
-                            )
+                            thermostat_response)
 
             for thermostat in thermostat_response.thermostat_list:
                 self._log.debug("Gathering data for thermostat:\n%s",
-                                thermostat.name
-                                )
+                                thermostat.name)
                 thermostat_id = {
                     "thermostat_id": thermostat.identifier,
                     "thermostat_name": thermostat.name
                 }
-
-                self.running_equipment(thermostat)
-                self.runtime_data(thermostat)
-                self.sensor_data(thermostat)
-                # self.settings_data(thermostat, thermostat_id)
+                try:
+                    self.running_equipment(thermostat)
+                    self.runtime_data(thermostat)
+                    self.sensor_data(thermostat)
+                    # self.settings_data(thermostat, thermostat_id)
+                except (AttributeError, ValueError) as error:
+                    self._log.error("ERROR: %s", error)
         return self.metrics
