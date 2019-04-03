@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="ecobee_exporter",
-    version="0.1.0",
+    version="0.2.0",
     author="Ali Yahya",
     author_email="amyahya@gmail.com",
     classifiers=[
@@ -15,7 +15,7 @@ setup(
     ],
     description="Export Ecobee metrics for Prometheus",
     dependency_links=[
-        "git+ssh://git@github.com/mumblepins/Pyecobee.git#egg=Pyecobee"
+        "git+https://github.com/mumblepins/Pyecobee#egg=Pyecobee"
     ],
     install_requires=[
         "prometheus_client",
