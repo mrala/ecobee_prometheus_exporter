@@ -11,4 +11,4 @@ RUN apt-get update && \
 RUN python setup.py install
 RUN python setup.py install_scripts
 
-CMD [ "ecobee_exporter", "-v" ]
+CMD [ "ecobee_exporter" ]

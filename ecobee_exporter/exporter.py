@@ -31,7 +31,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.verbose:
+    if args.verbose or os.environ.get('EE_LOG_LEVEL'):
         level = logging.DEBUG
     else:
         level = logging.INFO
