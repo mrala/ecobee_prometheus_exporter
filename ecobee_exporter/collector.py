@@ -273,7 +273,7 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
         self._log.debug("Found thermostat(s):\n%s", thermostat_ids)
 
         for thermostat_id in thermostat_ids:
-
+            assert thermostat_id.isdigit(), "Invalid thermostat ID."
             thermostat_response = ecobee_service.request_thermostats(
                 selection=Selection(
                     selection_type="thermostats",
