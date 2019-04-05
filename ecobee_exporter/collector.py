@@ -269,7 +269,7 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                         "ecobee_service.request_thermostats_summary:\n%s",
                         thermostat_summary_response.pretty_format())
 
-        thermostat_ids = [i.replace(":", "") for i in thermostat_summary_response.status_list]
+        thermostat_ids = [i.split(":")[0] for i in thermostat_summary_response.status_list if i.isdigit()]
         self._log.debug("Found thermostat(s):\n%s", thermostat_ids)
 
         for thermostat_id in thermostat_ids:
