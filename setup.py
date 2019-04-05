@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="ecobee_exporter",
-    version="0.2.0",
+    version="0.2.1",
     author="Ali Yahya",
     author_email="amyahya@gmail.com",
     classifiers=[
