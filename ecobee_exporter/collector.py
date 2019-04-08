@@ -173,13 +173,16 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
         """Gather running equipment."""
         self.fan_status.labels(
             thermostat_name=thermostat.name,
-            type="fan").set(1 if re.search("fan", thermostat.equipment_status, re.IGNORECASE) else 0)
+            type="fan").set(
+                1 if re.search("fan", thermostat.equipment_status, re.IGNORECASE) else 0)
         self.heat_status.labels(
             thermostat_name=thermostat.name,
-            type="heat").set(1 if re.search("heat", thermostat.equipment_status, re.IGNORECASE) else 0)
+            type="heat").set(
+                1 if re.search("heat", thermostat.equipment_status, re.IGNORECASE) else 0)
         self.cool_status.labels(
             thermostat_name=thermostat.name,
-            type="cool").set(1 if re.search("cool", thermostat.equipment_status, re.IGNORECASE) else 0)
+            type="cool").set(
+                1 if re.search("cool", thermostat.equipment_status, re.IGNORECASE) else 0)
 
     def runtime_data(self, thermostat):
         """Gather runtime data."""
