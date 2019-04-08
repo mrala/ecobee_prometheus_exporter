@@ -269,11 +269,12 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                         "ecobee_service.request_thermostats_summary:\n%s",
                         thermostat_summary_response.pretty_format())
 
-        thermostat_ids = [i.split(":")[0] for i in thermostat_summary_response.revision_list]
+        thermostat_ids = [re.search(r'^(\d+):', i).group(1)
+                          for i in thermostat_summary_response.revision_list]
         self._log.debug("Found thermostat(s):\n%s", thermostat_ids)
 
         for thermostat_id in thermostat_ids:
-            assert thermostat_id.isdigit(), "Invalid thermostat ID."
+            assert thermostat_id.isdigit(), f"Invalid thermostat ID: {thermostat_id}."
             thermostat_response = ecobee_service.request_thermostats(
                 selection=Selection(
                     selection_type="thermostats",
