@@ -171,16 +171,15 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
 
     def running_equipment(self, thermostat):
         """Gather running equipment."""
-        for equipment in thermostat.equipment_status.split(","):
-            self.fan_status.labels(
-                thermostat_name=thermostat.name,
-                type="fan").set(1 if re.search("fan", equipment, re.IGNORECASE) else 0)
-            self.heat_status.labels(
-                thermostat_name=thermostat.name,
-                type="heat").set(1 if re.search("heat", equipment, re.IGNORECASE) else 0)
-            self.cool_status.labels(
-                thermostat_name=thermostat.name,
-                type="cool").set(1 if re.search("cool", equipment, re.IGNORECASE) else 0)
+        self.fan_status.labels(
+            thermostat_name=thermostat.name,
+            type="fan").set(1 if re.search("fan", thermostat.equipment_status, re.IGNORECASE) else 0)
+        self.heat_status.labels(
+            thermostat_name=thermostat.name,
+            type="heat").set(1 if re.search("heat", thermostat.equipment_status, re.IGNORECASE) else 0)
+        self.cool_status.labels(
+            thermostat_name=thermostat.name,
+            type="cool").set(1 if re.search("cool", thermostat.equipment_status, re.IGNORECASE) else 0)
 
     def runtime_data(self, thermostat):
         """Gather runtime data."""
@@ -295,7 +294,7 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                     "thermostat_name": thermostat.name
                 }
                 try:
-                    self.running_equipment(thermostat)
+                    self.running_equipment(thermostat.equipment_status)
                     self.runtime_data(thermostat)
                     self.sensor_data(thermostat)
                     # self.settings_data(thermostat, thermostat_id)
