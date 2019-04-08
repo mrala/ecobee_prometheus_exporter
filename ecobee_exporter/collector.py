@@ -297,7 +297,7 @@ class EcobeeCollector(): # pylint: disable=too-few-public-methods
                     "thermostat_name": thermostat.name
                 }
                 try:
-                    self.running_equipment(thermostat.equipment_status)
+                    self.running_equipment(thermostat)
                     self.runtime_data(thermostat)
                     self.sensor_data(thermostat)
                     # self.settings_data(thermostat, thermostat_id)
