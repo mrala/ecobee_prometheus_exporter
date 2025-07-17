@@ -35,7 +35,7 @@ Run:
 ```
 > docker run -it --rm -p 9756:9756 \
 >   -e "APIKEY=<your_api_key>" \
->   -e "AUTH=/pyecobee_db.db" \
+>   -e "AUTH=/pyecobee_db/pyecobee.db" \
 >   -v $(pwd)/pyecobee_db:/pyecobee_db \
 >   --name ecobee_prometheus_exporter \
 >   ecobee_prometheus_exporter
